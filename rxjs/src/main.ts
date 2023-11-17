@@ -1,7 +1,5 @@
 import './style.css'
-import { Observable, Observer, Subscriber, count, of } from "rxjs";
-
-//import './Observables/01-observables'
+import { Observable, Observer, Subscriber, count } from "rxjs";
 
 // Interfaz
 const observer: Observer<any> = {
@@ -13,14 +11,13 @@ const observer: Observer<any> = {
 
 const intervalo$ = new Observable<number>(Subscriber => {
   
-  // Crear un contador, 1,2,3,4,5...
-  let contador:number  = 0;
+  let count:number  = 0;
 
   const interval = setInterval(() => {
     // Cada Segundo
-    ++contador;
-    Subscriber.next( contador );
-    console.log(contador);
+    ++count;
+    Subscriber.next( count );
+    console.log(count);
   },1000);
 
   return () => {
@@ -29,17 +26,18 @@ const intervalo$ = new Observable<number>(Subscriber => {
   }
 })
 
-const subs1 = intervalo$.subscribe();
-const subs2 = intervalo$.subscribe();
-const subs3 = intervalo$.subscribe();
+const subs1 = intervalo$.subscribe( observer );
+const subs2 = intervalo$.subscribe( observer );
+const subs3 = intervalo$.subscribe( observer );
+
+subs1.add(subs2)
+subs2.add(subs3)
 
 // Cancelariamos la subscription despues del timepo indicado
 setTimeout(() => { 
 
+  subs1.unsubscribe() // Al usar 
 
-  subs1.unsubscribe() 
-  subs2.unsubscribe() 
-  subs3.unsubscribe() 
 
-  console.log('Completado timeout');
-},4000)
+  console.log('Completado timeout'); // Se dispara despues de completar unsubscribes
+},6000)

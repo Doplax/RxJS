@@ -1,19 +1,30 @@
-import { Observable } from "rxjs";
+import { Observable, Observer } from "rxjs";
 
-//Forma poco comun
-//const obs$ = Observable.create()
+
 
 const obs$ = new Observable<string>(subs => { // Recomendable especificar el tipo
     subs.next('hola')
     subs.next('mundo')
 
-    subs.complete()
-    // Esto, al estár despues del complete ya no se emitiria
-    subs.next('hola')
-    subs.next('mundo')
+    // Forzar un error
+    const a = undefined;
+    a.nombre = 'Fernando'
 
+    subs.complete()
 });
 
+// Interfaz
+const observer: Observer<any> = {
+    next: value => console.log('siguiente [next]:',value),
+    error: error => console.warn('siguiente [error]:',error),
+    complete: () => console.info('completado')
 
-//obs$.subscribe( resp => console.log(resp));
-obs$.subscribe( console.log ); // Es lo mismo pero más breve 
+}
+obs$.subscribe(observer)
+
+
+//obs$.subscribe(
+//    valor => console.log('next', valor),
+//    error => console.warn('error', error),
+//    () => console.info('completado')
+//); 
